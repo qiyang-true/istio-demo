@@ -52,13 +52,13 @@ spec:
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: details
+  name: details-v3
   namespace: example
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: details
+    name: details-v3
   minReplicas: 1
   maxReplicas: 6
   metrics:

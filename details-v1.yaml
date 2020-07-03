@@ -52,7 +52,7 @@ spec:
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: details
+  name: details-v1
   namespace: example
 spec:
   scaleTargetRef:
