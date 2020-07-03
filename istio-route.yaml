@@ -1,0 +1,74 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: example-gateway
+  namespace: example
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: HTTP
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: example
+  namespace: example
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - example-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: index
+        port:
+          number: 80
+  - match:
+    - uri:
+        exact: /list
+    route:
+    - destination:
+        host: list
+        port:
+          number: 80
+  - match:
+    - uri:
+        exact: /details
+    route:
+    - destination:
+        host: details
+        port:
+          number: 80
+  - match:
+    - uri:
+        exact: /user
+    route:
+    - destination:
+        host: user
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: index
+  namespace: example
+spec:
+  host: index
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2

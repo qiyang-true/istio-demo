@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: details-v3
+  namespace: example
+  labels:
+    app: details
+    version: v3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: details
+      version: v3
+  template:
+    metadata:
+      name: details
+      namespace: example
+      labels:
+        app: details
+        version: v3
+    spec:
+      containers:
+      - name: details
+        image: zhuqiyang/istio-demo-details:0.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: details
+        resources:
+          requests:
+            memory: 20Mi
+            cpu: 10m
+          limits:
+            memory: 100Mi
+            cpu: 20m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: details
+  namespace: example
+spec:
+  selector: 
+    app: details
+  type: ClusterIP
+  ports:
+  - name: details
+    port: 80
+    targetPort: 80
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: details
+  namespace: example
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: details
+  minReplicas: 1
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 50
